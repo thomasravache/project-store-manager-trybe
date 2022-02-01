@@ -36,4 +36,56 @@ describe('--- TESTES DA CAMADA DE MODEL ---', () => {
       });
     });
   });
+
+  describe('--- (getAll) --- Retorna os produtos cadastrados', () => {
+    describe('quando não tem produtos cadastrados', async () => {
+      before(async () => {
+        sinon.stub(connection, 'execute').resolves([[]]);
+      });
+  
+      after(async () => {
+        connection.execute.restore();
+      });
+  
+      it('deve retornar um array vazio', async () => {
+        const products = await ProductModels.getAll();
+
+        expect(products).to.be.an('array');
+        expect(products.length).to.be.equal(0);
+      })
+    });
+
+    describe('quando tem produtos cadastrados', () => {
+      const fakeProducts = [
+        {
+          id: 1,
+          name: 'Produto 1',
+          quantity: 1,
+        },
+        {
+          id: 2,
+          name: 'Produto 2',
+          quantity: 2,
+        }
+      ];
+
+      before(async () => {
+        sinon.stub(connection, 'execute').resolves([fakeProducts]);
+      });
+
+      after(async () => {
+        connection.execute.restore();
+      });
+
+      it('deve retornar um array de objetos', async () => {
+        const products = await ProductModels.getAll();
+
+        expect(products).to.be.an('array');
+
+        products.forEach((product) => {
+          expect(product).to.have.all.keys('id', 'name', 'quantity');
+        })
+      });
+    });
+  });
 });

@@ -13,6 +13,18 @@ describe('--- TESTES DA CAMADA DE SERVICE ---', () => {
       };
 
       before(async () => {
+        sinon.stub(ProductModels, 'getAll').resolves([
+          {
+            id: 1,
+            name: 'Produto 1',
+            quantity: 1,
+          },
+          {
+            id: 2,
+            name: 'Produto 2',
+            quantity: 2,
+          },
+        ]);
         sinon.stub(ProductModels, 'create').resolves({
           id: 1,
           name: 'Coca cola',
@@ -21,6 +33,7 @@ describe('--- TESTES DA CAMADA DE SERVICE ---', () => {
       });
 
       after(async () => {
+        ProductModels.getAll.restore();
         ProductModels.create.restore();
       });
 
@@ -45,6 +58,38 @@ describe('--- TESTES DA CAMADA DE SERVICE ---', () => {
           quantity: 2,
         });
       })
+    });
+
+    describe('Quando o payload não é válido', () => {
+      describe('o produto já é cadastrado', () => {
+        const payload = {
+          name: 'produto',
+          quantity: 2,
+        };
+
+        before(async () => {
+          sinon.stub(ProductModels, 'getAll').resolves([
+            {
+              id: 1,
+              name: 'produto',
+              quantity: 2
+            },
+          ]);
+        });
+
+        after(async () => {
+          ProductModels.getAll.restore();
+        });
+
+        it('é lançado o erro "Product already exists"', async () => {
+          try {
+            await ProductServices.create(payload);
+          } catch (e) {
+            expect(e).to.be.exist;
+            expect(e.message).to.be.equals('Product already exists');
+          }
+        });
+      });
     });
   });
 });
