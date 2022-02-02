@@ -55,13 +55,21 @@ const update = async ({ id, name, quantity }) => {
       id = ?
   `;
 
-  await connection.execute(query, [name, quantity, id]);
+  const [result] = await connection.execute(query, [name, quantity, id]);
 
-  return {
-    id,
-    name,
-    quantity,
-  };
+  return result;
+};
+
+const removeProduct = async ({ id }) => {
+  const query = `
+    DELETE FROM
+      products
+    WHERE
+      id = ?
+  `;
+
+  const [result] = await connection.execute(query, [id]);
+  return result;
 };
 
 module.exports = {
@@ -69,4 +77,5 @@ module.exports = {
   getAll,
   getById,
   update,
+  removeProduct,
 };

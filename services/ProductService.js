@@ -31,9 +31,27 @@ const update = async ({ id, name, quantity }) => {
 
   if (productToUpdate.length === 0) throw new Error('Product not found');
 
-  const updatedProduct = await ProductModels.update({ id, name, quantity });
+  await ProductModels.update({ id, name, quantity });
 
-  return updatedProduct;
+  return {
+    id,
+    name,
+    quantity,
+  };
+};
+
+const removeProduct = async ({ id }) => {
+  const productToDelete = await ProductModels.getById({ id });
+
+  if (productToDelete.length === 0) throw new Error('Product not found');
+
+  await ProductModels.removeProduct({ id });
+
+  return {
+    id,
+    name: productToDelete[0].name,
+    quantity: productToDelete[0].quantity,
+  };
 };
 
 module.exports = {
@@ -41,4 +59,5 @@ module.exports = {
   getAll,
   getById,
   update,
+  removeProduct,
 };

@@ -140,23 +140,40 @@ describe('--- TESTES DA CAMADA DE MODEL ---', () => {
       const payload = {
         id: 1,
         name: 'Produto 1',
-        quantity: 2
+        quantity: 2,
       };
 
       before(async () => {
-        sinon.stub(connection, 'execute').resolves([[]]);
+        sinon.stub(connection, 'execute').resolves([{ changedRows: 1 }]);
       });
 
       after(async () => {
         connection.execute.restore();
       });
 
-      it('deve retornar um objeto contendo o produto alterado', async () => {
-        const response = await ProductModels.update(payload);
+      it('deve retornar o objeto com a chave "changedRows" igual a 1', async () => {
+        const result = await ProductModels.update(payload);
 
-        expect(response).to.be.a('object');
-        expect(response).to.be.deep.equal(payload);
+        expect(result.changedRows).to.be.equal(1);
       });
+    });
+  });
+
+  describe('--- (removeProduct) --- Deleta um produto do banco de dados', () => {
+    const idToDelete = 1;
+
+    before(async () => {
+      sinon.stub(connection, 'execute').resolves([{ affectedRows: 1 }]);
+    });
+
+    after(async () => {
+      connection.execute.restore();
+    });
+
+    it ('deve retornar o objeto com a chave "affectedRows" igual a 1', async () => {
+      const result = await ProductModels.removeProduct(idToDelete);
+
+      expect(result.affectedRows).to.be.equal(1);
     });
   });
 });

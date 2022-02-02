@@ -184,7 +184,6 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
         res.json = sinon.stub().returns();
         next = sinon.stub().returns();
 
-
         sinon.stub(ProductServices, 'getById').resolves(payload);
       });
 
@@ -323,6 +322,75 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
           expect(res.status.calledWith(200)).not.to.be.true;
           expect(res.json.calledWith(validPayloadExample)).not.to.be.true;
         });
+      });
+    });
+  });
+
+  describe('--- (removeProduct) --- remove um produto e devolve para o cliente o produto removido', () => {
+    describe('quando o produto é encontrado', () => {
+      const ID_EXAMPLE = 1;
+      const req = {};
+      const res = {};
+      const next = () => {};
+
+      before(() => {
+        req.params = { id: ID_EXAMPLE };
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+
+        sinon.stub(ProductServices, 'removeProduct').resolves({
+          id: 1,
+          name: 'Produto 1',
+          quantity: 2,
+        });
+      });
+
+      after(() => {
+        ProductServices.removeProduct.restore();
+      });
+
+      it('status deve ser "200" e json deve retornar o produto deletado', async () => {
+        await ProductControllers.removeProduct(req, res, next);
+
+        const jsonReturn = {
+          id: 1,
+          name: 'Produto 1',
+          quantity: 2,
+        };
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith(jsonReturn)).to.be.true;
+      });
+    });
+
+    describe('quando o produto não é encontrado', () => {
+      const req = {};
+      const res = {};
+      const next = () => {};
+
+      before(() => {
+        req.params = { id: 1 };
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+
+        sinon.stub(ProductServices, 'removeProduct').rejects(new Error('Product not found'));
+      });
+
+      after(() => {
+        ProductServices.removeProduct.restore();
+      });
+
+      it('não deve retornar status "200" nem json com o produto deletado', async () => {
+        await ProductControllers.removeProduct(req, res, next);
+
+        const jsonReturn = {
+          id: 1,
+          name: 'Produto 1',
+          quantity: 2,
+        };
+
+        expect(res.status.calledWith(200)).not.to.be.true;
+        expect(res.json.calledWith(jsonReturn)).not.to.be.true;
       });
     });
   });

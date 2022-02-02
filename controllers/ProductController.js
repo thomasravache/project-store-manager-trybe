@@ -52,17 +52,30 @@ const update = async (req, res, next) => {
   }
 };
 
+const removeProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const deletedProduct = await ProductServices.removeProduct({ id });
+  
+    return res.status(200).json(deletedProduct);
+  } catch (e) {
+    return next(e);
+  }
+};
+
 /* ----- ROTAS ----- */
 productsRouter.post('/', create);
 productsRouter.get('/', getAll);
 productsRouter.get('/:id', getById);
 productsRouter.put('/:id', update);
+productsRouter.delete('/:id', removeProduct);
 
 module.exports = {
-  productRouter: productsRouter,
+  productsRouter,
   create,
   validate,
   getAll,
   getById,
   update,
+  removeProduct,
 };

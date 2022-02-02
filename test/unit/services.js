@@ -208,7 +208,7 @@ describe('--- TESTES DA CAMADA DE SERVICE ---', () => {
             quantity: 10,
           }
         ]);
-        sinon.stub(ProductModels, 'update').resolves(payload);
+        sinon.stub(ProductModels, 'update').resolves({ changedRows: 1 });
       });
 
       after(async () => {
@@ -244,6 +244,58 @@ describe('--- TESTES DA CAMADA DE SERVICE ---', () => {
       it('deve ser lançado um erro com a mensagem "Product not found"', async () => {
         try {
           await ProductServices.update(payload);
+        } catch (e) {
+          expect(e).to.be.exist;
+          expect(e.message).to.be.equal('Product not found');
+        }
+      });
+    });
+  });
+
+  describe('--- (removeProduct) --- remove um produto do banco de dados', () => {
+    describe('quando o produto a ser deletado existe', () => {
+      const ID_EXAMPLE = 1;
+      before(async () => {
+        sinon.stub(ProductModels, 'getById').resolves([
+          {
+            id: 1,
+            name: 'Produto 1',
+            quantity: 1,
+          },
+        ]);
+
+        sinon.stub(ProductModels, 'removeProduct').resolves({ affectedRows: 1 });
+      });
+
+      after(async () => {
+        ProductModels.getById.restore();
+        ProductModels.removeProduct.restore();
+      });
+
+      it('deve devolver um objeto com o produto deletado', async () => {
+        const result = await ProductServices.removeProduct({ id: ID_EXAMPLE });
+
+        expect(result).to.deep.equal({
+          id: 1,
+          name: 'Produto 1',
+          quantity: 1,
+        });
+      });
+    });
+
+    describe('quando o produto a ser deletado não existe', () => {
+      const ID_EXAMPLE = 1;
+      before(async () => {
+        sinon.stub(ProductModels, 'getById').resolves([]);
+      });
+
+      after(async () => {
+        ProductModels.getById.restore();
+      });
+
+      it('um erro deve ser lançado com a mensagem "Product not found"', async () => {
+        try {
+          await ProductServices.removeProduct({ id: ID_EXAMPLE });
         } catch (e) {
           expect(e).to.be.exist;
           expect(e.message).to.be.equal('Product not found');
