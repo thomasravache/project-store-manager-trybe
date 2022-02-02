@@ -2,11 +2,10 @@ const express = require('express');
 const productSchema = require('../joiSchemas/product');
 const ProductServices = require('../services/ProductService');
 
-const productRouter = express.Router();
+const productsRouter = express.Router();
 
 const validate = (name, quantity) => {
   const { error } = productSchema.validate({ name, quantity });
-  console.log(error);
   if (error) throw error;
 
   return true;
@@ -19,15 +18,36 @@ const create = async (req, res, next) => {
     const createdProduct = await ProductServices.create({ name, quantity });
     return res.status(201).json(createdProduct);
   } catch (e) {
-    next(e);
+    return next(e);
+  }
+};
+
+const getAll = async (_req, res) => {
+  const products = await ProductServices.getAll();
+
+  return res.status(200).json(products);
+};
+
+const getById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await ProductServices.getById({ id });
+
+    return res.status(200).json(product);
+  } catch (e) {
+    return next(e);
   }
 };
 
 /* ----- ROTAS ----- */
-productRouter.post('/', create);
+productsRouter.post('/', create);
+productsRouter.get('/', getAll);
+productsRouter.get('/:id', getById);
 
 module.exports = {
-  productRouter,
+  productRouter: productsRouter,
   create,
   validate,
+  getAll,
+  getById,
 };

@@ -12,6 +12,22 @@ const create = async ({ name, quantity }) => {
   return createdProduct;
 };
 
+const getAll = async () => {
+  const products = await ProductModels.getAll();
+
+  return products;
+};
+
+const getById = async ({ id }) => {
+  const product = await ProductModels.getById({ id });
+
+  if (product.length === 0) throw new Error('Product not found');
+
+  return product[0];
+};
+
 module.exports = {
   create,
+  getAll,
+  getById,
 };

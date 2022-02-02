@@ -87,5 +87,51 @@ describe('--- TESTES DA CAMADA DE MODEL ---', () => {
         })
       });
     });
+
+    describe('--- (getById) --- Retorna um produto específico pelo Id', () => {
+      describe('quando o produto é encontrado', () => {
+        const ID_EXAMPLE = 1;
+        const product = {
+          id: 1,
+          name: 'Produto 1',
+          quantity: 1
+        };
+
+        before(async () => {
+          sinon.stub(connection, 'execute').resolves([[product]]);
+        });
+
+        after(async () => {
+          connection.execute.restore();
+        });
+
+        it('deve retornar um array com apenas um objeto contendo o produto', async () => {
+          const response = await ProductModels.getById(ID_EXAMPLE);
+
+          expect(response).to.be.a('array');
+          expect(response.length).to.be.equals(1);
+          expect(response[0]).to.have.all.keys('id', 'name', 'quantity');
+          expect(response[0].id).to.be.equals(ID_EXAMPLE);
+        });
+      });
+
+      describe('quando o produto não é encontrado', async () => {
+        const ID_EXAMPLE = 1;
+
+        before(async () => {
+          sinon.stub(connection, 'execute').resolves([[]]);
+        });
+
+        after(async () => {
+          connection.execute.restore();
+        });
+
+        it('deve retornar um array vazio', async () => {
+          const response = await ProductModels.getById(ID_EXAMPLE);
+
+          expect(response).to.be.a('array').that.is.empty;
+        });
+      });
+    })
   });
 });

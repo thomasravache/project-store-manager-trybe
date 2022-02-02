@@ -104,6 +104,135 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
     });
   });
 
+  describe('--- (getAll) --- Retorna os produtos cadastrados ao client', () => {
+    describe('quando existem registros a serem retornados', () => {
+      const req = {};
+      const res = {};
+  
+      const payload = [
+        {
+          id: 1,
+          name: 'Produto 1',
+          quantity: 2,
+        },
+        {
+          id: 2,
+          name: 'Produto 2',
+          quantity: 2
+        }
+      ];
+  
+      before(() => {
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+  
+        sinon.stub(ProductServices, 'getAll').resolves(payload);
+      });
+  
+      after(() => {
+        ProductServices.getAll.restore();
+      });
+  
+      it('deve retornar status "200" e o json com o produto', async () => {
+        await ProductControllers.getAll(req, res);
+  
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith(payload)).to.be.true;
+      });
+    });
+
+    describe('quando não existem registros a sem retornados', () => {
+      const req = {};
+      const res = {};
+  
+      const payload = [];
+  
+      before(() => {
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+  
+        sinon.stub(ProductServices, 'getAll').resolves([]);
+      });
+  
+      after(() => {
+        ProductServices.getAll.restore();
+      });
+
+      it('deve retornar status "200" com um json contendo um array vazio', async () => {
+        await ProductControllers.getAll(req, res);
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith(payload)).to.be.true;
+      });
+    });
+  });
+
+  describe('--- (getById) --- Retorna um produto com base no id', () => {
+    describe('quando o produto é encontrado', () => {
+      const req = {};
+      const res = {};
+      let next = () => {};
+      const payload = {
+        id: 1,
+        name: 'Produto 1',
+        quantity: 1,
+      };
+
+      before(() => {
+        req.params = { id: 1 };
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+        next = sinon.stub().returns();
+
+
+        sinon.stub(ProductServices, 'getById').resolves(payload);
+      });
+
+      after(() => {
+        ProductServices.getById.restore();
+      });
+
+      it('status seja "200" e o json contendo o produto', async () => {
+        await ProductControllers.getById(req, res, next);
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith(payload)).to.be.true;
+      });
+    });
+
+    describe('quando o produto não é encontrado', () => {
+      const req = {};
+      const res = {};
+      let next = () => {};
+
+      const payload = {
+        id: 1,
+        name: 'Produto 1',
+        quantity: 1,
+      };
+
+      before(() => {
+        req.params = { id: 1 };
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+        next = sinon.stub().returns();
+
+        sinon.stub(ProductServices, 'getById').rejects(new Error('Product not found'));
+      });
+
+      after(() => {
+        ProductServices.getById.restore();
+      });
+
+      it('status não deve ser "200" e json não deve conter um produto', async () => {
+        await ProductControllers.getById(req, res, next);
+
+        expect(res.status.calledWith(200)).not.to.be.true;
+        expect(res.json.calledWith(payload)).not.to.be.true;
+      });
+    });
+  });
+
   describe('--- (errorController) --- Trata os erros de input || negocio || inesperados', () => {
     describe('quando um erro é identificado', () => {
       describe('e o erro é de input (Joi)', () => {
@@ -122,11 +251,12 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
         };
         const req = {};
         const res = {};
-        const next = () => {};
+        let next = () => {};
   
         before(() => {
           res.status = sinon.stub().returns(res);
           res.json = sinon.stub().returns();
+          next = sinon.stub().returns();
   
         });
   
@@ -164,15 +294,17 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
     
     describe('e o erro é de regra de negócio', () => {
       const errorTypes = [
-        { code: 409, message: 'Product already exists' }
+        { code: 409, message: 'Product already exists' },
+        { code: 404, message: 'Product not found' },
       ]
       const req = {};
       const res = {};
-      const next = () => {};
+      let next = () => {};
 
       before(() => {
         res.status = sinon.stub().returns(res);
         res.json = sinon.stub().returns();
+        next = sinon.stub().returns();
       });
 
       errorTypes.forEach((errorType) => {
@@ -200,11 +332,12 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
       };
       const req = {};
       const res = {};
-      const next = () => {};
+      let next = () => {};
 
       before(() => {
         res.status = sinon.stub().returns(res);
         res.json = sinon.stub().returns();
+        next = sinon.stub().returns();
       });
 
       it('o status deve ser "500"', () => {
