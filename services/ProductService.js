@@ -26,8 +26,19 @@ const getById = async ({ id }) => {
   return product[0];
 };
 
+const update = async ({ id, name, quantity }) => {
+  const productToUpdate = await ProductModels.getById({ id });
+
+  if (productToUpdate.length === 0) throw new Error('Product not found');
+
+  const updatedProduct = await ProductModels.update({ id, name, quantity });
+
+  return updatedProduct;
+};
+
 module.exports = {
   create,
   getAll,
   getById,
+  update,
 };

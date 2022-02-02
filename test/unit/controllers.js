@@ -93,12 +93,12 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
           req.body = testCase;
           await ProductControllers.create(req, res, next);
           
-          expect(res.status.calledWith(201)).to.be.false;
+          expect(res.status.calledWith(201)).not.to.be.true;
           expect(res.json.calledWith({
             id: 1,
             name: 'Coca cola',
             quantity: 2,
-          })).to.be.false;
+          })).not.to.be.true;
         });
       })
     });
@@ -229,6 +229,100 @@ describe('--- TESTES DA CAMADA DE CONTROLLER ---', () => {
 
         expect(res.status.calledWith(200)).not.to.be.true;
         expect(res.json.calledWith(payload)).not.to.be.true;
+      });
+    });
+  });
+
+  describe('--- (update) --- Atualiza um produto e retorna pro client', () => {
+    describe('quando o req.body é válido', () => {
+      const ID_EXAMPLE = 1;
+      const req = {};
+      const res = {};
+      let next = () => {};
+
+      before(() => {
+        req.params = { id: ID_EXAMPLE };
+        req.body = { name: 'produto novo', quantity: 3 };
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+        next = sinon.stub().returns;
+
+        sinon.stub(ProductServices, 'update').resolves({
+          id: ID_EXAMPLE,
+          name: 'produto novo',
+          quantity: 3,
+        });
+      });
+
+      after(() => {
+        ProductServices.update.restore();
+      });
+
+      it('deve retornar status "200" e o json com o produto alterado', async () => {
+        await ProductControllers.update(req, res, next);
+
+        const jsonReturn = {
+          id: ID_EXAMPLE,
+          name: 'produto novo',
+          quantity: 3,
+        };
+
+        expect(res.status.calledWith(200)).to.be.true;
+        expect(res.json.calledWith(jsonReturn)).to.be.true;
+      });
+    });
+    describe('quando o req.body não é válido', () => {
+      const validPayloadExample = {
+        id: 1,
+        name: 'Produto de Exemplo',
+        quantity: 10,
+      }
+      const ID_EXAMPLE = 1;
+      const req = {};
+      const res = {};
+      const next = () => {};
+
+      const testCases = [
+        {},
+        { quantity: 100 },
+        { name: 'pro', quantity: 100 },
+        { name: 'produto' },
+        { name: 'produto', quantity: 'string' },
+        { name: 'produto', quantity: -1 },
+        { name: 'produto', quantity: 0 },
+      ];
+
+
+      before(() => {
+        req.params = { id: ID_EXAMPLE };
+        req.body = {};
+        res.status = sinon.stub().returns(res);
+        res.json = sinon.stub().returns();
+
+        sinon.stub(ProductServices, 'update').resolves(validPayloadExample);
+      });
+
+      after(() => {
+        ProductServices.update.restore();
+      });
+
+      testCases.forEach((testCase) => {
+        it(`a função validate lança um erro do Joi quando req.body = ${JSON.stringify(testCase)}`, async () => {
+          req.body = testCase;
+          try {
+            ProductControllers.validate(req.body);
+          } catch (e) {
+            expect(e.isJoi).to.be.true;
+          }
+        });
+
+        it('não retorna status 200 nem o json com o produto alterado', async () => {
+          req.body = testCase;
+          await ProductControllers.update(req, res, next);
+
+          expect(res.status.calledWith(200)).not.to.be.true;
+          expect(res.json.calledWith(validPayloadExample)).not.to.be.true;
+        });
       });
     });
   });

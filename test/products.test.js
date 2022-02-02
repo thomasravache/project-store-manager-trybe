@@ -263,7 +263,7 @@ describe("Products", () => {
   });
 
   describe("3 - Crie um endpoint para atualizar um produto", () => {
-    it.skip("Será validado que não é possível atualizar um produto com o nome menor que 5 caracteres", async () => {
+    it("Será validado que não é possível atualizar um produto com o nome menor que 5 caracteres", async () => {
       let result;
       let resultProductId;
 
@@ -291,7 +291,7 @@ describe("Products", () => {
         });
     });
 
-    it.skip("Será validado que não é possível atualizar um produto com quantidade menor que zero", async () => {
+    it("Será validado que não é possível atualizar um produto com quantidade menor que zero", async () => {
       let result;
       let resultProductId;
 
@@ -319,7 +319,7 @@ describe("Products", () => {
         });
     });
 
-    it.skip("Será validado que não é possível atualizar um produto com quantidade igual a zero", async () => {
+    it("Será validado que não é possível atualizar um produto com quantidade igual a zero", async () => {
       let result;
       let resultProductId;
 
@@ -347,7 +347,7 @@ describe("Products", () => {
         });
     });
 
-    it.skip("Será validado que não é possível atualizar um produto com uma string no campo quantidade", async () => {
+    it("Será validado que não é possível atualizar um produto com uma string no campo quantidade", async () => {
       let result;
       let resultProductId;
 
@@ -373,7 +373,7 @@ describe("Products", () => {
         });
     });
 
-    it.skip("Será validado que é possível atualizar um produto com sucesso", async () => {
+    it("Será validado que é possível atualizar um produto com sucesso", async () => {
       let result;
       let resultProductId;
 
@@ -401,7 +401,7 @@ describe("Products", () => {
         });
     });
 
-    it.skip("Será validado que não é possível atualizar um produto que não existe", async () => {
+    it("Será validado que não é possível atualizar um produto que não existe", async () => {
       await frisby
         .put(`${url}/products/${INVALID_ID}`,{
           name: "produto inexistente",

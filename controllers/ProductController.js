@@ -39,10 +39,24 @@ const getById = async (req, res, next) => {
   }
 };
 
+const update = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, quantity } = req.body;
+    validate(name, quantity);
+    const updatedProduct = await ProductServices.update({ id, name, quantity });
+
+    return res.status(200).json(updatedProduct);
+  } catch (e) {
+    return next(e);
+  }
+};
+
 /* ----- ROTAS ----- */
 productsRouter.post('/', create);
 productsRouter.get('/', getAll);
 productsRouter.get('/:id', getById);
+productsRouter.put('/:id', update);
 
 module.exports = {
   productRouter: productsRouter,
@@ -50,4 +64,5 @@ module.exports = {
   validate,
   getAll,
   getById,
+  update,
 };

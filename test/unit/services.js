@@ -191,4 +191,64 @@ describe('--- TESTES DA CAMADA DE SERVICE ---', () => {
       });
     });
   });
+
+  describe('--- (update) --- Atualiza um produto', () => {
+    describe('quando o produto a ser alterado existe', () => {
+      const payload = {
+        id: 1,
+        name: 'Produto alterado',
+        quantity: 20,
+      };
+
+      before(async () => {
+        sinon.stub(ProductModels, 'getById').resolves([
+          {
+            id: 1,
+            name: 'Produto 1',
+            quantity: 10,
+          }
+        ]);
+        sinon.stub(ProductModels, 'update').resolves(payload);
+      });
+
+      after(async () => {
+        ProductModels.getById.restore();
+        ProductModels.update.restore();
+      });
+
+      it('deve retornar um objeto com o produto alterado', async () => {
+        const updatedProduct = await ProductServices.update(payload);
+
+        expect(updatedProduct).to.be.a('object');
+        expect(updatedProduct).to.deep.equal(payload);
+      });
+    });
+
+    describe('quando o produto a ser alterado não existe', () => {
+      const payload = {
+        id: 38,
+        name: 'produto que não existe',
+        quantity: 3,
+      };
+
+      before(async () => {
+        sinon.stub(ProductModels, 'getById').resolves([]);
+        // sinon.stub(ProductModels, 'update').resolves([[]]);
+      });
+
+      after(async () => {
+        // ProductModels.update.restore();
+        ProductModels.getById.restore();
+      });
+
+      it('deve ser lançado um erro com a mensagem "Product not found"', async () => {
+        try {
+          await ProductServices.update(payload);
+        } catch (e) {
+          expect(e).to.be.exist;
+          expect(e.message).to.be.equal('Product not found');
+        }
+      });
+    });
+  });
 });
