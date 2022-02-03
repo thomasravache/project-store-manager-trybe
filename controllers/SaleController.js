@@ -14,7 +14,7 @@ const validate = (productId, quantity) => {
 
 const create = async (req, res, next) => {
   try {
-    req.body.forEach(({ quantity, product_id }) => {
+    req.body.forEach(({ product_id, quantity }) => {
       validate(product_id, quantity);
     });
     const sale = await SaleServices.create(req.body);

@@ -3,9 +3,10 @@ const sinon = require('sinon');
 
 const connection = require('../../models/connection');
 const ProductModels = require('../../models/ProductModel');
+const SaleModels = require('../../models/SaleModel');
 
 describe('--- TESTES DA CAMADA DE MODEL ---', () => {
-  describe('--- TESTES DO PRODUCT ---', () => {
+  describe('--- PRODUCTS ---', () => {
     describe('--- (create) --- Insere um produto no banco de dados', () => {
       describe('quando é inserido com sucesso', () => {
         const payload = {
@@ -179,7 +180,27 @@ describe('--- TESTES DA CAMADA DE MODEL ---', () => {
     });
   });
 
-  describe('--- TESTES DO SALES ---', () => {
-    
+  describe('--- SALES ---', () => {
+    describe('--- (create) --- Cadastra uma venda no banco', () => {
+      const payload = [
+        {
+          product_id: 1,
+          quantity: 1,
+        },
+      ];
+      before(async () => {
+        sinon.stub(connection, 'execute').resolves([{ insertId: 1 }]);
+      });
+
+      after(async () => {
+        connection.execute.restore();
+      });
+
+      it('deve retornar o objeto contendo o "insertId"', async () => {
+        const response = await SaleModels.create(payload);
+
+        expect(response.insertId).to.be.exist;
+      });
+    });
   });
 });
