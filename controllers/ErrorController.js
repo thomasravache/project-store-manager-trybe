@@ -9,6 +9,7 @@ const joiStatusCodes = {
 const statusCodes = {
   'Product already exists': 409,
   'Product not found': 404,
+  'There are product(s) that were not found': 404,
 };
 
 module.exports = (err, _req, res, _next) => {
