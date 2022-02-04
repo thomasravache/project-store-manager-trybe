@@ -28,8 +28,29 @@ const getById = async ({ id }) => {
   return sale;
 };
 
+const update = async ({ saleId, salesOrder }) => {
+  const productId = 'product_id';
+  const searchedSale = await SaleModels.getById({ id: saleId });
+
+  if (searchedSale.length === 0) throw new Error('Sale not found');
+
+  const error = salesOrder
+  .some((saleToUpdate) => 
+    !searchedSale.some((productSaled) => productSaled[productId] === saleToUpdate[productId]));
+
+  if (error) throw new Error('There are products reported that were not found in this sale');
+
+  await SaleModels.update({ saleId, salesOrder });
+
+  return {
+    saleId,
+    itemUpdated: salesOrder,
+  };
+};
+
 module.exports = {
   create,
   getAll,
   getById,
+  update,
 };

@@ -43,9 +43,27 @@ const getById = async (req, res, next) => {
   }
 };
 
+const update = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { body } = req;
+
+    body.forEach(({ product_id, quantity }) => {
+      validate(product_id, quantity);
+    });
+
+    const updatedSale = await SaleServices.update({ saleId: parseInt(id, 10), salesOrder: body });
+
+    res.status(200).json(updatedSale);
+  } catch (e) {
+    return next(e);
+  }
+};
+
 salesRouter.post('/', create);
 salesRouter.get('/', getAll);
 salesRouter.get('/:id', getById);
+salesRouter.put('/:id', update);
 
 module.exports = {
   salesRouter,

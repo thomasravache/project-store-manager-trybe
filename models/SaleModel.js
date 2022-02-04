@@ -65,8 +65,26 @@ const getById = async ({ id }) => {
   return saleRow.map(serialize);
 };
 
+const update = async ({ saleId, salesOrder }) => {
+  const query = `
+    UPDATE
+      sales_products
+    SET
+      quantity = ?
+    WHERE
+      sale_id = ? AND product_id = ?;
+  `;
+
+  const productId = 'product_id';
+
+  salesOrder.forEach(async (sale) => {
+    await connection.execute(query, [sale.quantity, saleId, sale[productId]]);
+  });
+};
+
 module.exports = {
   create,
   getAll,
   getById,
+  update,
 };

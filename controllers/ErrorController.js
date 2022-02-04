@@ -11,6 +11,7 @@ const statusCodes = {
   'Product not found': 404,
   'There are product(s) that were not found': 404,
   'Sale not found': 404,
+  'There are products reported that were not found in this sale': 404,
 };
 
 module.exports = (err, _req, res, _next) => {
