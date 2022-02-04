@@ -39,7 +39,7 @@ const getById = async ({ id }) => {
 const update = async ({ saleId, salesOrder }) => {
   const productId = 'product_id';
   const searchedSale = await SaleModels.getById({ id: saleId });
-  // const products = await ProductModels.getAll();
+  const products = await ProductModels.getAll();
 
   if (searchedSale.length === 0) throw new Error('Sale not found');
 
@@ -49,15 +49,15 @@ const update = async ({ saleId, salesOrder }) => {
 
   if (error) throw new Error('There are products reported that were not found in this sale');
 
-  // const quantityAboveAvailabe = salesOrder.some((sale) => {
-  //   const product = products.find((p) => p.id === sale[productId]);
-  //   const lastInsertedQuantity = searchedSale
-  //     .find((soldProduct) => soldProduct[productId] === product.id);
+  const quantityAboveAvailabe = salesOrder.some((sale) => {
+    const product = products.find((p) => p.id === sale[productId]);
+    const lastInsertedQuantity = searchedSale
+      .find((soldProduct) => soldProduct[productId] === product.id);
 
-  //   return (product.quantity + lastInsertedQuantity.quantity) < sale.quantity;
-  // });
+    return (product.quantity + lastInsertedQuantity.quantity) < sale.quantity;
+  });
 
-  // if (quantityAboveAvailabe) throw new Error('Such amount is not permitted to sell');
+  if (quantityAboveAvailabe) throw new Error('Such amount is not permitted to sell');
 
   await SaleModels.update({ saleId, salesOrder });
 
