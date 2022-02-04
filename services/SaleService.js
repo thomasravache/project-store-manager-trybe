@@ -53,6 +53,7 @@ const update = async ({ saleId, salesOrder }) => {
     const product = products.find((p) => p.id === sale[productId]);
     const lastInsertedQuantity = searchedSale
       .find((soldProduct) => soldProduct[productId] === product.id);
+    // console.log(product.quantity + lastInsertedQuantity.quantity);
 
     return (product.quantity + lastInsertedQuantity.quantity) < sale.quantity;
   });
