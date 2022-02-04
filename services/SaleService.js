@@ -18,6 +18,18 @@ const create = async (salesOrder) => {
   };
 };
 
+const getAll = async () => SaleModels.getAll();
+
+const getById = async ({ id }) => {
+  const sale = await SaleModels.getById({ id });
+
+  if (sale.length === 0) throw new Error('Sale not found');
+
+  return sale;
+};
+
 module.exports = {
   create,
+  getAll,
+  getById,
 };

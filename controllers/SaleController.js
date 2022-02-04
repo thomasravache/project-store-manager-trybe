@@ -25,10 +25,32 @@ const create = async (req, res, next) => {
   }
 };
 
+const getAll = async (_req, res) => {
+  const sales = await SaleServices.getAll();
+
+  res.status(200).json(sales);
+};
+
+const getById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const sale = await SaleServices.getById({ id });
+
+    return res.status(200).json(sale);
+  } catch (e) {
+    return next(e);
+  }
+};
+
 salesRouter.post('/', create);
+salesRouter.get('/', getAll);
+salesRouter.get('/:id', getById);
 
 module.exports = {
   salesRouter,
   validate,
   create,
+  getAll,
+  getById,
 };
