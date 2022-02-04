@@ -123,4 +123,5 @@ module.exports = {
   getById,
   update,
   removeSale,
+  getLastQuantitySaleProduct,
 };
