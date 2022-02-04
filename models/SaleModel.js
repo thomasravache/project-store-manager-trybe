@@ -82,9 +82,21 @@ const update = async ({ saleId, salesOrder }) => {
   });
 };
 
+const removeSale = async ({ saleId }) => {
+  const query = `
+    DELETE FROM
+      sales
+    WHERE
+      id = ?;
+  `;
+
+  await connection.execute(query, [saleId]);
+};
+
 module.exports = {
   create,
   getAll,
   getById,
   update,
+  removeSale,
 };

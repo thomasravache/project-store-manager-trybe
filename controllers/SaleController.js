@@ -60,10 +60,23 @@ const update = async (req, res, next) => {
   }
 };
 
+const removeSale = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const removedSale = await SaleServices.removeSale({ saleId: id });
+
+    res.status(200).json(removedSale);
+  } catch (e) {
+    return next(e);
+  }
+};
+
 salesRouter.post('/', create);
 salesRouter.get('/', getAll);
 salesRouter.get('/:id', getById);
 salesRouter.put('/:id', update);
+salesRouter.delete('/:id', removeSale);
 
 module.exports = {
   salesRouter,
