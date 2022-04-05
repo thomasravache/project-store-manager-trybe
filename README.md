@@ -1,4 +1,4 @@
-# Projeto Trybe Futebol Clube (TFC)
+# Projeto Store Manager
 ![GitHub language count](https://img.shields.io/github/languages/count/thomasravache/project-store-manager-trybe)
 ![GitHub top language](https://img.shields.io/github/languages/top/thomasravache/project-store-manager-trybe)
 ![Scrutinizer code quality (GitHub/Bitbucket)](https://img.shields.io/scrutinizer/quality/g/thomasravache/project-store-manager-trybe/main)
